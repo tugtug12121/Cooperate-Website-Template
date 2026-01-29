@@ -12,7 +12,7 @@ jobs:
       - name: Post automated acknowledgement
         uses: peter-evans/create-or-update-comment@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.BOT_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
           body: |
@@ -21,24 +21,24 @@ jobs:
             Your report has been received and added to our review queue.  
             A member of the team will review the details and follow up with next steps.
 
-            **If this is a bug report**, please ensure the following information is included:
+            **If this is a bug report**, please include:
             - Steps to reproduce  
-            - Expected vs. actual behavior  
-            - Logs, screenshots, or error messages  
-            - Environment details (Browser, OS, Node.js version)
+            - Expected vs actual behavior  
+            - Logs or screenshots  
+            - Environment details (Browser, OS, Node version)
 
-            **If this is a feature request or suggestion**, please consider adding:
-            - The problem or opportunity this addresses  
-            - Example use cases or references  
-            - How this enhancement improves workflow or user experience
+            **If this is a feature request**, please include:
+            - The problem this solves  
+            - Example use cases  
+            - Why this matters
 
-            We appreciate your contribution and the time you’ve taken to help improve this project.  
+            We appreciate your contribution.  
             **— Cooperate Web Engineering**
 
-      - name: Add reaction to issue
+      - name: Add reaction
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
             await github.rest.reactions.createForIssue({
               ...context.repo,
@@ -46,10 +46,10 @@ jobs:
               content: 'hooray'
             });
 
-      - name: Label the issue for triage
+      - name: Add triage label
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
             await github.rest.issues.addLabels({
               ...context.repo,

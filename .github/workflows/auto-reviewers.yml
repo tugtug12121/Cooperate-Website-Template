@@ -1,0 +1,20 @@
+name: Auto Assign Reviewers
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  assign-reviewers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.BOT_TOKEN }}
+          script: |
+            await github.rest.pulls.requestReviewers({
+              ...context.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: ["Rachael"]
+            });

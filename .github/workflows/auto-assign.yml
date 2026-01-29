@@ -12,13 +12,9 @@ jobs:
       - name: Assign maintainers
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
-            const maintainers = [
-              "Tug",        // primary maintainer
-              "CooperateBot"    // optional bot or secondary maintainer
-            ];
-
+            const maintainers = ["Tug", "CooperateBot"];
             await github.rest.issues.addAssignees({
               ...context.repo,
               issue_number: context.payload.issue.number,
