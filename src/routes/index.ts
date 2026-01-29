@@ -4,7 +4,10 @@ import path from "path";
 
 const router = Router();
 
-// Resolve pages directory from project root
+// Store layouts per folder
+const layouts: Record<string, (html: string) => string> = {};
+
+// Resolve pages directory
 const pagesDir = path.join(process.cwd(), "src", "pages");
 console.log("🔍 Scanning pages in:", pagesDir);
 
@@ -13,9 +16,9 @@ if (!fs.existsSync(pagesDir)) {
   process.exit(1);
 }
 
-// SAFE: No regex literals (prevents TS errors)
-const dynamicParam = new RegExp("\\[(.+?)\\]", "g");          // [id]
-const catchAllParam = new RegExp("\\[\\.\\.\\.(.+?)\\]", "g"); // [...slug] 
+// SAFE regex
+const dynamicParam = new RegExp("\\[(.+?)\\]", "g");
+const catchAllParam = new RegExp("\\[\\.\\.\\.(.+?)\\]", "g");
 
 // Convert dynamic filenames → Express routes
 function convertDynamic(name: string) {
@@ -68,9 +71,8 @@ function walk(dir: string, baseRoute = "") {
       // -------------------------
       // LAYOUT SUPPORT
       // -------------------------
-      let layout: ((html: string) => string) | null = null;
       if (isLayout && typeof mod.default === "function") {
-        layout = mod.default;
+        layouts[baseRoute] = mod.default;
         console.log(`🎨 Layout detected for ${baseRoute || "/"}`);
         return;
       }
@@ -83,8 +85,9 @@ function walk(dir: string, baseRoute = "") {
           try {
             const result = await mod.default(req, res);
 
-            // Prevent double-send errors
             if (res.headersSent) return;
+
+            const layout = layouts[baseRoute];
 
             if (typeof result === "string") {
               res.send(layout ? layout(result) : result);
@@ -104,12 +107,7 @@ function walk(dir: string, baseRoute = "") {
         router.post(routePath, async (req, res, next) => {
           try {
             const result = await mod.POST(req, res);
-
-            if (res.headersSent) return;
-
-            if (typeof result === "string") {
-              res.send(result);
-            }
+            if (!res.headersSent && typeof result === "string") res.send(result);
           } catch (err) {
             next(err);
           }
@@ -125,12 +123,7 @@ function walk(dir: string, baseRoute = "") {
         router.put(routePath, async (req, res, next) => {
           try {
             const result = await mod.PUT(req, res);
-
-            if (res.headersSent) return;
-
-            if (typeof result === "string") {
-              res.send(result);
-            }
+            if (!res.headersSent && typeof result === "string") res.send(result);
           } catch (err) {
             next(err);
           }
@@ -146,12 +139,7 @@ function walk(dir: string, baseRoute = "") {
         router.delete(routePath, async (req, res, next) => {
           try {
             const result = await mod.DELETE(req, res);
-
-            if (res.headersSent) return;
-
-            if (typeof result === "string") {
-              res.send(result);
-            }
+            if (!res.headersSent && typeof result === "string") res.send(result);
           } catch (err) {
             next(err);
           }
