@@ -1,0 +1,26 @@
+name: Auto Assign Maintainers
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Assign maintainers
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const maintainers = [
+              "Tug",        // primary maintainer
+              "CooperateBot"    // optional bot or secondary maintainer
+            ];
+
+            await github.rest.issues.addAssignees({
+              ...context.repo,
+              issue_number: context.payload.issue.number,
+              assignees: maintainers
+            });
