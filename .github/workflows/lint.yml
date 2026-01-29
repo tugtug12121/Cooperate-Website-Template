@@ -27,3 +27,5 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+      - name: Fix ESLint permissions
+        run: chmod +x ./node_modules/.bin/eslint 
