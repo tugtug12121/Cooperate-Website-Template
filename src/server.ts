@@ -58,7 +58,7 @@ app.use(router);
    404 HANDLER
 ------------------------------ */
 
-app.use((req, res) => {
+app.use((_req, res) => {
   res.status(404).send(`
     <h1>404 - Not Found</h1>
     <p>The page you’re looking for doesn’t exist.</p>
@@ -69,7 +69,7 @@ app.use((req, res) => {
    ERROR HANDLER
 ------------------------------ */
 
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error("Server Error:", err);
   res.status(500).send(`
     <h1>500 - Server Error</h1>
