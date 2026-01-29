@@ -1,5 +1,5 @@
 # Security Policy
-
+yes
 ## Supported Versions
 We support the latest version of the project.
 
